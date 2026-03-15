@@ -478,23 +478,7 @@ async function launchGeneration() {
     
     // Prepare payload
     const payload = preparePayload(apiKey);
-    async function launchGeneration() {
-  try {
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('elevenLabsApiKey')}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-    const result = await response.json();
-    console.log('Generation launched:', result);
-  } catch (e) {
-    alert('Ошибка запуска генерации');
-  }
-}
-    try {
+        try {
         updateStatus('sending', 'Отправка данных...', 10);
         
         const response = await fetch(webhookUrl, {

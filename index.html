@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Director — Пошаговый мастер генерации видео</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">🎬 AI Video Director</div>
+            <div class="progress-indicator">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="mainProgressBar"></div>
+                </div>
+                <span class="step-counter">Шаг <span id="currentStepNum">1</span> из <span id="totalSteps">9</span></span>
+            </div>
+        </header>
+
+        <!-- Wizard Container -->
+        <main class="wizard-container">
+            <form id="videoWizard" onsubmit="return false;">
+                
+                <!-- ШАГ 1: Сценарий и интерьер -->
+                <section class="wizard-step active" data-step="1">
+                    <div class="step-header">
+                        <span class="step-number">1</span>
+                        <h2>Сценарий и описание интерьера</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="form-group">
+                            <label class="form-label">📄 Загрузите файл сценария или введите текст</label>
+                            <div class="upload-zone" id="scriptUploadZone">
+                                <input type="file" id="scriptFile" accept=".txt,.doc,.docx,.pdf,.md" hidden>
+                                <div class="upload-placeholder">
+                                    <span class="upload-icon">📎</span>
+                                    <p>Перетащите файл сценария сюда или нажмите для выбора</p>
+                                    <span class="upload-hint">Поддерживаемые форматы: TXT, DOC, DOCX, PDF, MD</span>
+                                </div>
+                                <div class="upload-preview hidden" id="scriptPreview"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">✏️ Или введите сценарий вручную:</label>
+                            <textarea class="form-textarea" id="scriptText" rows="6" placeholder="Опишите сцену: что происходит, где, в какое время суток..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">🏠 Описание интерьера / локации:</label>
+                            <textarea class="form-textarea" id="interiorDescription" rows="4" placeholder="Опишите помещение: стиль, мебель, декор, атмосферу..."></textarea>
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <button type="button" class="btn btn-secondary hidden" onclick="prevStep()">← Назад</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Далее →</button>
+                    </div>
+                </section>
+
+                <!-- ШАГ 2: Диалоги персонажей -->
+                <section class="wizard-step" data-step="2">
+                    <div class="step-header">
+                        <span class="step-number">2</span>
+                        <h2>Диалоги персонажей</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="form-group">
+                            <label class="form-label">💬 Загрузите файл с диалогами или введите текст:</label>
+                            <div class="upload-zone" id="dialogueUploadZone">
+                                <input type="file" id="dialogueFile" accept=".txt,.doc,.docx,.pdf,.md,.json" hidden>
+                                <div class="upload-placeholder">
+                                    <span class="upload-icon">💬</span>
+                                    <p>Перетащите файл с диалогами</p>
+                                    <span class="upload-hint">Формат: Имя: Текст реплики</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Или введите диалог вручную:</label>
+                            <div class="dialogue-editor" id="dialogueEditor">
+                                <div class="dialogue-line">
+                                    <input type="text" class="speaker-input" placeholder="Имя персонажа" value="Алексей">
+                                    <input type="text" class="line-input" placeholder="Текст реплики...">
+                                </div>
+                                <div class="dialogue-line">
+                                    <input type="text" class="speaker-input" placeholder="Имя персонажа" value="Михаил">
+                                    <input type="text" class="line-input" placeholder="Текст реплики...">
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="addDialogueLine()">+ Добавить реплику</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Количество персонажей в сцене:</label>
+                            <div class="radio-cards" id="characterCount">
+                                <label class="radio-card">
+                                    <input type="radio" name="characterCount" value="1">
+                                    <span class="radio-card-content">
+                                        <span class="radio-card-icon">👤</span>
+                                        <span class="radio-card-title">1 персонаж</span>
+                                    </span>
+                                </label>
+                                <label class="radio-card checked">
+                                    <input type="radio" name="characterCount" value="2" checked>
+                                    <span class="radio-card-content">
+                                        <span class="radio-card-icon">👥</span>
+                                        <span class="radio-card-title">2 персонажа</span>
+                                    </span>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="characterCount" value="3">
+                                    <span class="radio-card-content">
+                                        <span class="radio-card-icon">👨‍👩‍👦</span>
+                                        <span class="radio-card-title">3 персонажа</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Назад</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Далее →</button>
+                    </div>
+                </section>
+
+                <!-- ШАГ 3: Фото и видео персонажей -->
+                <section class="wizard-step" data-step="3">
+                    <div class="step-header">
+                        <span class="step-number">3</span>
+                        <h2>Фото и видео персонажей</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="characters-upload" id="charactersUpload">
+                            <div class="character-upload-card" data-character="1">
+                                <h4>Персонаж 1</h4>
+                                <div class="media-upload-zones">
+                                    <div class="upload-zone media-zone">
+                                        <input type="file" accept="image/*" class="photo-input" hidden>
+                                        <div class="upload-placeholder small">
+                                            <span class="upload-icon">📷</span>
+                                            <p>Фото лица</p>
+                                            <span class="upload-hint">JPG, PNG</span>
+                                        </div>
+                                        <div class="upload-preview hidden"></div>
+                                    </div>
+                                    <div class="upload-zone media-zone">
+                                        <input type="file" accept="video/*" class="video-input" hidden>
+                                        <div class="upload-placeholder small">
+                                            <span class="upload-icon">🎥</span>
+                                            <p>Видео-референс</p>
+                                            <span class="upload-hint">MP4, MOV</span>
+                                        </div>
+                                        <div class="upload-preview hidden"></div>
+                                    </div>
+                                </div>
+                                <input type="text" class="character-name-input" placeholder="Имя персонажа">
+                                <textarea class="character-desc-input" placeholder="Описание: возраст, внешность, характер..."></textarea>
+                            </div>
+
+                            <div class="character-upload-card" data-character="2">
+                                <h4>Персонаж 2</h4>
+                                <div class="media-upload-zones">
+                                    <div class="upload-zone media-zone">
+                                        <input type="file" accept="image/*" class="photo-input" hidden>
+                                        <div class="upload-placeholder small">
+                                            <span class="upload-icon">📷</span>
+                                            <p>Фото лица</p>
+                                        </div>
+                                        <div class="upload-preview hidden"></div>
+                                    </div>
+                                    <div class="upload-zone media-zone">
+                                        <input type="file" accept="video/*" class="video-input" hidden>
+                                        <div class="upload-placeholder small">
+                                            <span class="upload-icon">🎥</span>
+                                            <p>Видео-референс</p>
+                                        </div>
+                                        <div class="upload-preview hidden"></div>
+                                    </div>
+                                </div>
+                                <input type="text" class="character-name-input" placeholder="Имя персонажа">
+                                <textarea class="character-desc-input" placeholder="Описание персонажа..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Назад</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Далее →</button>
+                    </div>
+                </section>
+
+                <!-- ШАГ 4: Уточнения (одежда, свет, позы) -->
+                <section class="wizard-step" data-step="4">
+                    <div class="step-header">
+                        <span class="step-number">4</span>
+                        <h2>Уточнения по съёмке</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="form-group">
+                            <label class="form-label">👔 Одежда персонажей:</label>
+                            <textarea class="form-textarea" id="clothingDesc" rows="3" placeholder="Опишите одежду каждого персонажа (если не указано в сценарии)"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">💡 Освещение:</label>
+                            <div class="checkbox-cards" id="lightingOptions">
+                                <label class="checkbox-card checked">
+                                    <input type="radio" name="lighting" value="natural" checked>
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-icon">☀️</span>
+                                        <span class="checkbox-card-title">Естественное</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="radio" name="lighting" value="warm">
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-icon">🕯️</span>
+                                        <span class="checkbox-card-title">Тёплое</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="radio" name="lighting" value="cool">
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-icon">💎</span>
+                                        <span class="checkbox-card-title">Холодное</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="radio" name="lighting" value="dramatic">
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-icon">🎭</span>
+                                        <span class="checkbox-card-title">Драматичное</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="radio" name="lighting" value="soft">
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-icon">🌫️</span>
+                                        <span class="checkbox-card-title">Мягкое</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">🎨 Цветовая гамма:</label>
+                            <div class="checkbox-cards">
+                                <label class="checkbox-card">
+                                    <input type="radio" name="colorPalette" value="warm">
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-icon">🟠</span>
+                                        <span class="checkbox-card-title">Тёплая</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="radio" name="colorPalette" value="cool">
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-icon">🔵</span>
+                                        <span class="checkbox-card-title">Холодная</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card checked">
+                                    <input type="radio" name="colorPalette" value="neutral" checked>
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-icon">⚪</span>
+                                        <span class="checkbox-card-title">Нейтральная</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="radio" name="colorPalette" value="cinematic">
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-icon">🎬</span>
+                                        <span class="checkbox-card-title">Кинематографичная</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">🧍 Позы и жесты:</label>
+                            <textarea class="form-textarea" id="posesDesc" rows="3" placeholder="Опишите позы, жесты, мимику персонажей"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">📐 Дополнительные указания:</label>
+                            <textarea class="form-textarea" id="extraInstructions" rows="3" placeholder="Любые другие важные детали..."></textarea>
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Назад</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Далее →</button>
+                    </div>
+                </section>
+
+                <!-- ШАГ 5: Модель видеогенерации -->
+                <section class="wizard-step" data-step="5">
+                    <div class="step-header">
+                        <span class="step-number">5</span>
+                        <h2>Выбор модели видеогенерации</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="provider-section">
+                            <h4 class="provider-title">🎯 API in One (Рекомендуется)</h4>
+                            <div class="model-cards">
+                                <label class="model-card recommended checked">
+                                    <input type="radio" name="videoModel" value="kling-3" checked>
+                                    <span class="model-card-badge">★ Рекомендуется</span>
+                                    <span class="model-card-content">
+                                        <span class="model-card-name">Kling 3</span>
+                                        <span class="model-card-desc">Высочайшее качество, плавность движений, отличная физика</span>
+                                        <span class="model-card-meta">5-20 сек • 1080p</span>
+                                    </span>
+                                </label>
+                                <label class="model-card">
+                                    <input type="radio" name="videoModel" value="seedance">
+                                    <span class="model-card-content">
+                                        <span class="model-card-name">Seedance</span>
+                                        <span class="model-card-desc">Быстрая генерация, хорошая детализация лиц</span>
+                                        <span class="model-card-meta">5-20 сек • 1080p</span>
+                                    </span>
+                                </label>
+                                <label class="model-card">
+                                    <input type="radio" name="videoModel" value="luma">
+                                    <span class="model-card-content">
+                                        <span class="model-card-name">Luma Dream Machine</span>
+                                        <span class="model-card-desc">Кинематографичный стиль, драматичное освещение</span>
+                                        <span class="model-card-meta">5 сек • 1080p</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="provider-section">
+                            <h4 class="provider-title">🌐 OpenRouter</h4>
+                            <div class="model-cards">
+                                <label class="model-card">
+                                    <input type="radio" name="videoModel" value="openrouter-claude">
+                                    <span class="model-card-content">
+                                        <span class="model-card-name">Claude Video</span>
+                                        <span class="model-card-desc">Через Anthropic API</span>
+                                        <span class="model-card-meta">Стабильное качество</span>
+                                    </span>
+                                </label>
+                                <label class="model-card">
+                                    <input type="radio" name="videoModel" value="openrouter-gpt4v">
+                                    <span class="model-card-content">
+                                        <span class="model-card-name">GPT-4V Video</span>
+                                        <span class="model-card-desc">Через OpenAI API</span>
+                                        <span class="model-card-meta">Хорошо следует промптам</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Назад</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Далее →</button>
+                    </div>
+                </section>
+
+                <!-- ШАГ 6: Модель озвучки -->
+                <section class="wizard-step" data-step="6">
+                    <div class="step-header">
+                        <span class="step-number">6</span>
+                        <h2>Выбор модели озвучки</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="provider-section">
+                            <h4 class="provider-title">🗣️ ElevenLabs (Рекомендуется)</h4>
+                            <div class="model-cards">
+                                <label class="model-card recommended checked">
+                                    <input type="radio" name="ttsModel" value="eleven-multilingual-v2" checked>
+                                    <span class="model-card-badge">★ Рекомендуется</span>
+                                    <span class="model-card-content">
+                                        <span class="model-card-name">Multilingual v2</span>
+                                        <span class="model-card-desc">Лучшее качество для русского языка, естественная интонация</span>
+                                        <span class="model-card-meta">Поддержка 28 языков</span>
+                                    </span>
+                                </label>
+                                <label class="model-card">
+                                    <input type="radio" name="ttsModel" value="eleven-multilingual-v1">
+                                    <span class="model-card-content">
+                                        <span class="model-card-name">Multilingual v1</span>
+                                        <span class="model-card-desc">Быстрее, чуть ниже качество</span>
+                                        <span class="model-card-meta">9 языков</span>
+                                    </span>
+                                </label>
+                                <label class="model-card">
+                                    <input type="radio" name="ttsModel" value="eleven-turbo">
+                                    <span class="model-card-content">
+                                        <span class="model-card-name">Turbo v2.5</span>
+                                        <span class="model-card-desc">Максимальная скорость генерации</span>
+                                        <span class="model-card-meta">32 языка</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">⚡ Скорость речи:</label>
+                            <div class="range-with-value">
+                                <input type="range" class="form-range" name="speechSpeed" min="0.5" max="1.5" step="0.1" value="1.0">
+                                <span class="range-value">1.0x</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">🎛️ Стабильность голоса:</label>
+                            <div class="range-with-value">
+                                <input type="range" class="form-range" name="voiceStability" min="0" max="1" step="0.1" value="0.5">
+                                <span class="range-value">0.5</span>
+                            </div>
+                            <span class="form-hint">Низкая стабильность = более выразительно, высокая = более ровно</span>
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Назад</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Далее →</button>
+                    </div>
+                </section>
+
+                <!-- ШАГ 7: Голоса персонажей -->
+                <section class="wizard-step" data-step="7">
+                    <div class="step-header">
+                        <span class="step-number">7</span>
+                        <h2>Выбор голосов персонажей</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="character-voices" id="characterVoices">
+                            <div class="voice-assignment" data-character="1">
+                                <h4>Персонаж 1: <span class="assigned-name">—</span></h4>
+                                <div class="voice-grid">
+                                    <label class="voice-card checked">
+                                        <input type="radio" name="voice1" value="adam" checked>
+                                        <span class="voice-card-content">
+                                            <span class="voice-name">Adam</span>
+                                            <span class="voice-desc">Уверенный, глубокий</span>
+                                            <button type="button" class="voice-preview-btn" onclick="previewVoice('adam')">▶ Прослушать</button>
+                                        </span>
+                                    </label>
+                                    <label class="voice-card">
+                                        <input type="radio" name="voice1" value="antoni">
+                                        <span class="voice-card-content">
+                                            <span class="voice-name">Antoni</span>
+                                            <span class="voice-desc">Мягкий, дружелюбный</span>
+                                            <button type="button" class="voice-preview-btn" onclick="previewVoice('antoni')">▶ Прослушать</button>
+                                        </span>
+                                    </label>
+                                    <label class="voice-card">
+                                        <input type="radio" name="voice1" value="josh">
+                                        <span class="voice-card-content">
+                                            <span class="voice-name">Josh</span>
+                                            <span class="voice-desc">Энергичный, молодой</span>
+                                            <button type="button" class="voice-preview-btn" onclick="previewVoice('josh')">▶ Прослушать</button>
+                                        </span>
+                                    </label>
+                                    <label class="voice-card">
+                                        <input type="radio" name="voice1" value="michael">
+                                        <span class="voice-card-content">
+                                            <span class="voice-name">Michael</span>
+                                            <span class="voice-desc">Авторитетный, зрелый</span>
+                                            <button type="button" class="voice-preview-btn" onclick="previewVoice('michael')">▶ Прослушать</button>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="voice-assignment" data-character="2">
+                                <h4>Персонаж 2: <span class="assigned-name">—</span></h4>
+                                <div class="voice-grid">
+                                    <label class="voice-card">
+                                        <input type="radio" name="voice2" value="adam">
+                                        <span class="voice-card-content">
+                                            <span class="voice-name">Adam</span>
+                                            <span class="voice-desc">Уверенный, глубокий</span>
+                                            <button type="button" class="voice-preview-btn" onclick="previewVoice('adam')">▶ Прослушать</button>
+                                        </span>
+                                    </label>
+                                    <label class="voice-card checked">
+                                        <input type="radio" name="voice2" value="antoni" checked>
+                                        <span class="voice-card-content">
+                                            <span class="voice-name">Antoni</span>
+                                            <span class="voice-desc">Мягкий, дружелюбный</span>
+                                            <button type="button" class="voice-preview-btn" onclick="previewVoice('antoni')">▶ Прослушать</button>
+                                        </span>
+                                    </label>
+                                    <label class="voice-card">
+                                        <input type="radio" name="voice2" value="josh">
+                                        <span class="voice-card-content">
+                                            <span class="voice-name">Josh</span>
+                                            <span class="voice-desc">Энергичный, молодой</span>
+                                            <button type="button" class="voice-preview-btn" onclick="previewVoice('josh')">▶ Прослушать</button>
+                                        </span>
+                                    </label>
+                                    <label class="voice-card">
+                                        <input type="radio" name="voice2" value="michael">
+                                        <span class="voice-card-content">
+                                            <span class="voice-name">Michael</span>
+                                            <span class="voice-desc">Авторитетный, зрелый</span>
+                                            <button type="button" class="voice-preview-btn" onclick="previewVoice('michael')">▶ Прослушать</button>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">👩 Женские голоса (если нужны):</label>
+                            <div class="voice-grid">
+                                <label class="voice-card">
+                                    <input type="radio" name="femaleVoice" value="bella">
+                                    <span class="voice-card-content">
+                                        <span class="voice-name">Bella</span>
+                                        <span class="voice-desc">Тёплый, спокойный</span>
+                                    </span>
+                                </label>
+                                <label class="voice-card">
+                                    <input type="radio" name="femaleVoice" value="rachel">
+                                    <span class="voice-card-content">
+                                        <span class="voice-name">Rachel</span>
+                                        <span class="voice-desc">Профессиональный</span>
+                                    </span>
+                                </label>
+                                <label class="voice-card">
+                                    <input type="radio" name="femaleVoice" value="elli">
+                                    <span class="voice-card-content">
+                                        <span class="voice-name">Elli</span>
+                                        <span class="voice-desc">Энергичный, молодой</span>
+                                    </span>
+                                </label>
+                                <label class="voice-card">
+                                    <input type="radio" name="femaleVoice" value="matilda">
+                                    <span class="voice-card-content">
+                                        <span class="voice-name">Matilda</span>
+                                        <span class="voice-desc">Драматичный, выразительный</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Назад</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Далее →</button>
+                    </div>
+                </section>
+
+                <!-- ШАГ 8: Параметры видео -->
+                <section class="wizard-step" data-step="8">
+                    <div class="step-header">
+                        <span class="step-number">8</span>
+                        <h2>Параметры видео</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">⏱️ Длительность:</label>
+                                <div class="radio-cards compact">
+                                    <label class="radio-card">
+                                        <input type="radio" name="duration" value="5">
+                                        <span class="radio-card-content">
+                                            <span class="radio-card-title">5 сек</span>
+                                        </span>
+                                    </label>
+                                    <label class="radio-card checked">
+                                        <input type="radio" name="duration" value="10" checked>
+                                        <span class="radio-card-content">
+                                            <span class="radio-card-title">10 сек</span>
+                                        </span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="duration" value="15">
+                                        <span class="radio-card-content">
+                                            <span class="radio-card-title">15 сек</span>
+                                        </span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="duration" value="20">
+                                        <span class="radio-card-content">
+                                            <span class="radio-card-title">20 сек</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">📐 Соотношение сторон:</label>
+                                <div class="radio-cards compact">
+                                    <label class="radio-card checked">
+                                        <input type="radio" name="aspectRatio" value="16:9" checked>
+                                        <span class="radio-card-content">
+                                            <span class="radio-card-title">16:9</span>
+                                            <span class="radio-card-sub">Горизонтальное</span>
+                                        </span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="aspectRatio" value="9:16">
+                                        <span class="radio-card-content">
+                                            <span class="radio-card-title">9:16</span>
+                                            <span class="radio-card-sub">Вертикальное</span>
+                                        </span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="aspectRatio" value="1:1">
+                                        <span class="radio-card-content">
+                                            <span class="radio-card-title">1:1</span>
+                                            <span class="radio-card-sub">Квадрат</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">🎬 Количество сцен:</label>
+                            <div class="radio-cards">
+                                <label class="radio-card checked">
+                                    <input type="radio" name="sceneCount" value="1" checked>
+                                    <span class="radio-card-content">
+                                        <span class="radio-card-icon">📷</span>
+                                        <span class="radio-card-title">1 сцена</span>
+                                        <span class="radio-card-desc">Один непрерывный план</span>
+                                    </span>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="sceneCount" value="2">
+                                    <span class="radio-card-content">
+                                        <span class="radio-card-icon">📷📷</span>
+                                        <span class="radio-card-title">2 сцены</span>
+                                        <span class="radio-card-desc">Смена ракурса/плана</span>
+                                    </span>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="sceneCount" value="3">
+                                    <span class="radio-card-content">
+                                        <span class="radio-card-icon">📷📷📷</span>
+                                        <span class="radio-card-title">3 сцены</span>
+                                        <span class="radio-card-desc">Монтажная нарезка</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">🎥 Желаемые ракурсы:</label>
+                            <div class="checkbox-cards multi-select">
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="cameraAngles" value="closeup">
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-title">Крупный план</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card checked">
+                                    <input type="checkbox" name="cameraAngles" value="medium" checked>
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-title">Средний план</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="cameraAngles" value="wide">
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-title">Общий план</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="cameraAngles" value="over-shoulder">
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-title">Через плечо</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="cameraAngles" value="two-shot">
+                                    <span class="checkbox-card-content">
+                                        <span class="checkbox-card-title">Двойной план</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">🎯 Качество рендера:</label>
+                            <div class="radio-cards">
+                                <label class="radio-card">
+                                    <input type="radio" name="quality" value="draft">
+                                    <span class="radio-card-content">
+                                        <span class="radio-card-title">Черновик</span>
+                                        <span class="radio-card-desc">Быстро, для теста</span>
+                                    </span>
+                                </label>
+                                <label class="radio-card checked">
+                                    <input type="radio" name="quality" value="standard" checked>
+                                    <span class="radio-card-content">
+                                        <span class="radio-card-title">Стандарт</span>
+                                        <span class="radio-card-desc">Оптимальный баланс</span>
+                                    </span>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="quality" value="high">
+                                    <span class="radio-card-content">
+                                        <span class="radio-card-title">Высокое</span>
+                                        <span class="radio-card-desc">Максимальное качество</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Назад</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Далее →</button>
+                    </div>
+                </section>
+
+                <!-- ШАГ 9: Подтверждение и запуск -->
+                <section class="wizard-step" data-step="9">
+                    <div class="step-header">
+                        <span class="step-number">9</span>
+                        <h2>Проверка и запуск</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="summary-section">
+                            <h3>📋 Сводка проекта</h3>
+                            <div class="summary-grid" id="projectSummary">
+                                <!-- Will be populated by JS -->
+                            </div>
+                        </div>
+
+                        <div class="api-credentials">
+                            <h3>🔑 API Доступ</h3>
+                            <div class="form-group">
+                                <label class="form-label">API in One ключ:</label>
+                                <input type="password" class="form-input" id="apiKeyApiInOne" placeholder="aio_...">
+                                <span class="form-hint">Нужен для видеогенерации через Kling/Seedance</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">ElevenLabs ключ (если отличается):</label>
+                                <input type="password" class="form-input" id="apiKeyElevenLabs" placeholder="sk_...">
+                            </div>
+                        </div>
+
+                        <div class="webhook-config">
+                            <h3>📡 Webhook n8n</h3>
+                            <div class="form-group">
+                                <label class="form-label">URL webhook для запуска workflow:</label>
+                                <input type="url" class="form-input" id="n8nWebhook" placeholder="https://n8n.your-domain.com/webhook/video-generate">
+                                <span class="form-hint">На этот URL будет отправлен полный payload со всеми параметрами</span>
+                            </div>
+                        </div>
+
+                        <div class="estimation-box">
+                            <h4>⏱️ Примерное время генерации:</h4>
+                            <ul class="estimation-list" id="timeEstimation">
+                                <li>Видео (Kling 3, 10 сек): <strong>3-5 мин</strong></li>
+                                <li>Озвучка диалога: <strong>30 сек - 1 мин</strong></li>
+                                <li>Синхронизация: <strong>1-2 мин</strong></li>
+                                <li class="total">Итого: <strong>~5-8 минут</strong></li>
+                            </ul>
+                        </div>
+
+                        <div class="launch-actions">
+                            <button type="button" class="btn btn-outline btn-lg" onclick="saveDraft()">
+                                💾 Сохранить черновик
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-lg btn-launch" onclick="launchGeneration()">
+                                🚀 Запустить генерацию
+                            </button>
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Назад</button>
+                    </div>
+                </section>
+            </form>
+        </main>
+
+        <!-- Status Modal -->
+        <div class="status-modal hidden" id="statusModal">
+            <div class="status-modal-content">
+                <div class="status-icon" id="statusIcon">⏳</div>
+                <h3 id="statusTitle">Генерация запущена</h3>
+                <div class="progress-bar-container large">
+                    <div class="progress-bar" id="generationProgressBar"></div>
+                </div>
+                <p id="statusMessage">Подготовка данных...</p>
+                <div class="status-details" id="statusDetails"></div>
+                <div class="result-links hidden" id="resultLinks"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

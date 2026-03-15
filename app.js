@@ -333,14 +333,32 @@ function createCharacterCard(num) {
 }
 
 // ===== Voice Preview =====
-function previewVoice(voiceId) {
-    const voice = voiceOptions[voiceId];
-    if (!voice) return;
-    
-    // In a real implementation, this would call ElevenLabs API
-    alert(`Прослушивание голоса ${voice.name}:\n"${voice.preview}"\n\n(В реальной версии здесь будет воспроизведение аудио)`);
+async function previewVoice(voiceId) {
+  const apiKey = localStorage.getItem('elevenLabsApiKey');
+  if (!apiKey) {
+    showStep(9); // переход к шагу ввода API ключа
+    return;
+  }
+  try {
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: {
+        'xi-api-key': apiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text: "Hello! This is a voice preview.",
+        model_id: "eleven_multilingual_v2"
+      })
+    });
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+    audio.play();
+  } catch (e) {
+    alert('Ошибка воспроизведения голоса');
+  }
 }
-
 // ===== Update Voice Character Names =====
 function updateVoiceCharacterNames() {
     const characterInputs = document.querySelectorAll('.character-name-input');
@@ -460,7 +478,22 @@ async function launchGeneration() {
     
     // Prepare payload
     const payload = preparePayload(apiKey);
-    
+    async function launchGeneration() {
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('elevenLabsApiKey')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    console.log('Generation launched:', result);
+  } catch (e) {
+    alert('Ошибка запуска генерации');
+  }
+}
     try {
         updateStatus('sending', 'Отправка данных...', 10);
         
